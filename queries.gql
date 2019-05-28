@@ -1,0 +1,51 @@
+# Single match
+
+{
+  projectsSearchConnection(
+    query: {
+      match: {
+        notes: {
+          query: "some notes"
+        }
+      }
+    }
+    sort: [name__keyword__asc]
+  ) {
+    edges {
+      node {
+        _source {
+          name
+          start
+          end
+          roles {
+            filled
+            unfilled
+          }
+        }
+      }
+    }
+  }
+}
+
+# Multiple match
+
+{
+  projectsSearchConnection(
+    query: {
+      multi_match: {
+        query: "avenue",
+        fields: ["notes", "address"]
+      }
+    }
+    sort: [name__keyword__asc]
+  ) {
+    edges {
+      node {
+        _source {
+          notes
+          address
+        }
+      }
+    }
+  }
+}

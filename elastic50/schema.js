@@ -1,5 +1,3 @@
-/* @flow */
-
 import elasticsearch from 'elasticsearch';
 import { graphql, ObjectTypeComposer } from 'graphql-compose';
 import { composeWithElastic, elasticApiFieldConfig } from 'graphql-compose-elasticsearch';
@@ -8,10 +6,10 @@ const { GraphQLSchema, GraphQLObjectType } = graphql;
 
 // Mapping obtained from ElasticSearch server
 // If you have an existing index in ES you may load mapping via
-//   GET http://user:pass@localhost:9200/demo_user/_mapping
+//   GET http://user:pass@localhost:9200/projects/_mapping
 //   and then get subtree of returned document which contains
 //   properties definitions (which looks like following data):
-const demoUserMapping = {
+const demoProjectMapping = {
   properties: {
     name: {
       type: 'text',
@@ -21,85 +19,50 @@ const demoUserMapping = {
         },
       },
     },
-    gender: {
-      type: 'text',
-    },
-    birthday: {
+    start: {
       type: 'date',
     },
-    position: {
-      type: 'text',
+    end: {
+      type: 'date'
     },
-    relocation: {
-      type: 'boolean',
-    },
-    salary: {
+    roles: {
       properties: {
-        currency: {
-          type: 'text',
+        filled: {
+          type: 'integer',
         },
-        total: {
-          type: 'double',
-        },
+        unfilled: {
+          type: 'integer',
+        }
       },
     },
-    skills: {
-      type: 'text',
+    status: {
+      type: 'text'
     },
-    languages: {
-      type: 'keyword',
+    issues: {
+      type: 'integer'
     },
-    location: {
-      properties: {
-        name: {
-          type: 'text',
-        },
-        point: {
-          type: 'geo_point',
-        },
-      },
+    notes: {
+      type: 'text'
     },
-    experience: {
-      properties: {
-        company: {
-          type: 'text',
-        },
-        description: {
-          type: 'text',
-        },
-        end: {
-          type: 'date',
-        },
-        position: {
-          type: 'text',
-        },
-        start: {
-          type: 'date',
-        },
-        tillNow: {
-          type: 'boolean',
-        },
-      },
+    address: {
+      type: 'text'
     },
-    createdAt: {
-      type: 'date',
+    buildType: {
+      type: 'text'
     },
   },
 };
 
-const UserEsTC = composeWithElastic({
-  graphqlTypeName: 'UserES',
-  elasticIndex: 'demo_user',
-  elasticType: 'demo_user',
-  elasticMapping: demoUserMapping,
+const ProjectsEsTC = composeWithElastic({
+  graphqlTypeName: 'ProjectsES',
+  elasticIndex: 'projects',
+  elasticType: 'projects',
+  elasticMapping: demoProjectMapping,
   elasticClient: new elasticsearch.Client({
     host: 'http://localhost:9200',
     apiVersion: '5.6',
     log: 'trace',
   }),
-  // elastic mapping does not contain information about is fields are arrays or not
-  // so provide this information explicitly for obtaining correct types in GraphQL
-  pluralFields: ['skills', 'languages'],
 });
 
 const ProxyTC = ObjectTypeComposer.createTemp(`type ProxyDebugType { source: JSON }`);
@@ -113,23 +76,23 @@ ProxyTC.addResolver({
   resolve: ({ args }) => args,
 });
 
-UserEsTC.addRelation('showRelationArguments', {
-  resolver: () => ProxyTC.getResolver('showArgs'),
-  prepareArgs: {
-    source: source => source,
-  },
-  projection: {
-    name: true,
-    salary: true,
-  },
-});
+// ProjectsEsTC.addRelation('showRelationArguments', {
+//   resolver: () => ProxyTC.getResolver('showArgs'),
+//   prepareArgs: {
+//     source: source => source,
+//   },
+//   projection: {
+//     name: true,
+//     salary: true,
+//   },
+// });
 
 const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'Query',
     fields: {
-      userSearch: UserEsTC.getResolver('search').getFieldConfig(),
-      userSearchConnection: UserEsTC.getResolver('searchConnection').getFieldConfig(),
+      projectsSearch: ProjectsEsTC.getResolver('search').getFieldConfig(),
+      projectsSearchConnection: ProjectsEsTC.getResolver('searchConnection').getFieldConfig(),
       elastic50: elasticApiFieldConfig({
         host: 'http://user:pass@localhost:9200',
         apiVersion: '5.6',
