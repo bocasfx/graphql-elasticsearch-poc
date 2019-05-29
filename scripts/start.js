@@ -1,43 +1,48 @@
-const elasticPath = process.argv[2] || '/Users/rodolfopalacios/Development/elasticsearch-7.1.0/bin/elasticsearch';
 const { exec } = require('child_process');
 const waitOn = require('wait-on');
+const fs = require('fs');
+const chalk = require('chalk');
 
+const elasticBinPath = process.env.ELASTIC_BIN_PATH;
 const seedCmd = 'BABEL_ENV=dev ./node_modules/.bin/babel-node ./elastic50/seedData.js';
 const graphQLCmd = 'BABEL_ENV=dev nodemon -e js --exec ./node_modules/.bin/babel-node ./elastic50/index.js';
+const elasticOpts = {resources: ['http://localhost:9200/']};
+const graphQLOpts = {resources: ['http://localhost:9201/']};
+const checkmark = chalk.green('\u2713');
 
-console.log('Starting Elasticsearch...')
-exec(elasticPath, (elasticErr) => {
+if (!elasticBinPath) {
+  console.log('\nThe ELASTIC_BIN_PATH environment variable is not set.\n');
+  return;
+}
+
+console.log(elasticBinPath)
+
+if (!fs.existsSync(elasticBinPath)) {
+  console.log(`\nThe path specified in ELASTIC_BIN_PATH does not exist: ${chalk.red(elasticBinPath)}\n`);
+  return;
+}
+
+process.stdout.write('\nStarting Elasticsearch on port 9200... ')
+exec(elasticBinPath, (elasticErr) => {
   if (elasticErr) {
-    console.log(elasticErr);
+    console.log(`Unable to start Elasticsearch: ${chalk.red(elasticErr)}`);
     return;
   }
 });
 
-const elasticOpts = {
-  resources: [
-    'http://localhost:9200/'
-  ]
-};
-
-const graphQLOpts = {
-  resources: [
-    'http://localhost:9201/'
-  ]
-};
-
 const doIt = async () => {
   await waitOn(elasticOpts);
 
-  console.log('Elasticsearch running on port 9200.');
-  console.log('Seeding data.')
+  console.log(checkmark);
+  process.stdout.write('Seeding data... ')
 
   exec(seedCmd, async (seedErr) => {
     if (seedErr) {
       console.log(seedErr);
       return;
     }
-    console.log('Data seed completed.');
-    console.log('Starting GraphQL server...')
+    console.log(checkmark);
+    process.stdout.write('Starting GraphQL server on port 9201... ')
 
     exec(graphQLCmd, (graphQLErr) => {
       if (graphQLErr) {
@@ -47,7 +52,7 @@ const doIt = async () => {
     });
 
     await waitOn(graphQLOpts);
-    console.log('GraphQL server running on port 9201.');
+    console.log(checkmark);
   });
 };
 
