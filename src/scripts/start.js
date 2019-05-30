@@ -1,8 +1,10 @@
 const chalk = require('chalk');
-const { validateEnvironment, startService } = require('./service');
+const { isEnvironmentValid, startService } = require('./service');
 
 try {
-  validateEnvironment();
+  if (!isEnvironmentValid()) {
+    return;
+  }
   startService();
 } catch (err) {
   // eslint-disable-next-line no-console

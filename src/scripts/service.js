@@ -8,15 +8,17 @@ const { seedCmd, graphQLCmd, elasticSearchUrl, graphQLPort, elasticSearchPort } 
 const elasticBinPath = process.env.ELASTICSEARCH_BIN_PATH;
 const checkmark = chalk.green('\u2713');
 
-const validateEnvironment = () => {
+const isEnvironmentValid = () => {
   if (!elasticBinPath) {
-    console.log('\nThe ELASTICSEARCH_BIN_PATH environment variable is not set.\n');
-    return;
+    console.log(chalk.red('\nThe ELASTICSEARCH_BIN_PATH environment variable is not set.\n'));
+    return false;
   }
 
   if (!fs.existsSync(elasticBinPath)) {
-    console.log(`\nThe path specified in ELASTICSEARCH_BIN_PATH does not exist: ${chalk.red(elasticBinPath)}\n`);
+    console.log(chalk.red(`\nThe path specified in ELASTICSEARCH_BIN_PATH does not exist: ${chalk.red(elasticBinPath)}\n`));
+    return false;
   }
+  return true;
 };
 
 const startService = async () => {
@@ -48,5 +50,5 @@ const startService = async () => {
 
 module.exports = {
   startService,
-  validateEnvironment,
+  isEnvironmentValid,
 };
