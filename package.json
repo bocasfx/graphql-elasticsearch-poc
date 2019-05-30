@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start": "BABEL_ENV=dev node ./scripts/start.js",
-    "start:graphql": "yarn seed && ./node_modules/.bin/babel-node ./elastic50/index.js",
+    "start:graphql": "BABEL_ENV=dev ./node_modules/.bin/babel-node ./elastic50/index.js",
     "seed": "BABEL_ENV=dev ./node_modules/.bin/babel-node ./elastic50/seedData.js"
   },
   "dependencies": {

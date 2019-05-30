@@ -1,6 +1,7 @@
 import elasticsearch from 'elasticsearch';
 import { graphql, ObjectTypeComposer } from 'graphql-compose';
 import { composeWithElastic, elasticApiFieldConfig } from 'graphql-compose-elasticsearch';
+import { elasticSearchPort } from '../config';
 
 const { GraphQLSchema, GraphQLObjectType } = graphql;
 
@@ -23,7 +24,7 @@ const demoProjectMapping = {
       type: 'date',
     },
     end: {
-      type: 'date'
+      type: 'date',
     },
     roles: {
       properties: {
@@ -32,23 +33,23 @@ const demoProjectMapping = {
         },
         unfilled: {
           type: 'integer',
-        }
+        },
       },
     },
     status: {
-      type: 'text'
+      type: 'text',
     },
     issues: {
-      type: 'integer'
+      type: 'integer',
     },
     notes: {
-      type: 'text'
+      type: 'text',
     },
     address: {
-      type: 'text'
+      type: 'text',
     },
     buildType: {
-      type: 'text'
+      type: 'text',
     },
   },
 };
@@ -59,13 +60,13 @@ const ProjectsEsTC = composeWithElastic({
   elasticType: 'projects',
   elasticMapping: demoProjectMapping,
   elasticClient: new elasticsearch.Client({
-    host: 'http://localhost:9200',
+    host: `http://localhost:${elasticSearchPort}`,
     apiVersion: '5.6',
     log: 'trace',
   }),
 });
 
-const ProxyTC = ObjectTypeComposer.createTemp(`type ProxyDebugType { source: JSON }`);
+const ProxyTC = ObjectTypeComposer.createTemp('type ProxyDebugType { source: JSON }');
 ProxyTC.addResolver({
   name: 'showArgs',
   kind: 'query',
@@ -94,7 +95,7 @@ const schema = new GraphQLSchema({
       projectsSearch: ProjectsEsTC.getResolver('search').getFieldConfig(),
       projectsSearchConnection: ProjectsEsTC.getResolver('searchConnection').getFieldConfig(),
       elastic50: elasticApiFieldConfig({
-        host: 'http://user:pass@localhost:9200',
+        host: `http://user:pass@localhost:${elasticSearchPort}`,
         apiVersion: '5.6',
         log: 'trace',
       }),
