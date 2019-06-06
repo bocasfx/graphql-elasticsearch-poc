@@ -1,6 +1,6 @@
 [
   {
-    "id": 1,
+    "accountId": 1,
     "name": "Project 1",
     "start": "2017-10-19T04:29:08Z",
     "end": "2019-10-19T04:29:08Z",
@@ -14,7 +14,7 @@
     "address": "123 Avenue st.",
     "buildType": "Commercial"
   }, {
-    "id": 2,
+    "accountId": 1,
     "name": "Project 2",
     "start": "2018-10-19T04:29:08Z",
     "end": "2018-11-19T04:29:08Z",
@@ -25,6 +25,34 @@
     "status": "Completed",
     "issues": 18,
     "notes": "Some notes for project 2. Project 1 is in 123 Avenue st.",
+    "address": "555 Abbey Rd.",
+    "buildType": "Residential"
+  }, {
+    "accountId": 2,
+    "name": "Project 3",
+    "start": "2017-10-19T04:29:08Z",
+    "end": "2019-10-19T04:29:08Z",
+    "roles": {
+      "filled": 4,
+      "unfilled": 7
+    },
+    "status": "Active",
+    "issues": 2,
+    "notes": "Some notes for project 3.",
+    "address": "123 Avenue st.",
+    "buildType": "Commercial"
+  }, {
+    "accountId": 2,
+    "name": "Project 4",
+    "start": "2018-10-19T04:29:08Z",
+    "end": "2018-11-19T04:29:08Z",
+    "roles": {
+      "filled": 1,
+      "unfilled": 8
+    },
+    "status": "Completed",
+    "issues": 18,
+    "notes": "Some notes for project 4. Project 3 is in 123 Avenue st.",
     "address": "555 Abbey Rd.",
     "buildType": "Residential"
   }

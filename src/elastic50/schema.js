@@ -12,6 +12,9 @@ const { GraphQLSchema, GraphQLObjectType } = graphql;
 //   properties definitions (which looks like following data):
 const demoProjectMapping = {
   properties: {
+    accountId: {
+      type: 'integer',
+    },
     name: {
       type: 'text',
       fields: {
